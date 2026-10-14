@@ -22,7 +22,7 @@ class OptionsTest {
 
     static Stream<Arguments> errors() {
         return Stream.of(
-                err("missing command (put, get, del, list, stats, compact, verify, repair or dump)"),
+                err("missing command (put, get, del, incr, list, stats, compact, verify, repair or dump)"),
                 err("unknown command \"frob\"", "frob"),
                 err("unknown command \"--prefix\"", "--prefix"),
                 err("unknown option \"--help\"", "--help", "put"),

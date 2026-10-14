@@ -32,12 +32,34 @@ public final class Cli {
         if (cmd.equals("put")) {
             value = readValue(o.value(), stdin);
         }
-        Store store = Store.load(Path.of(o.file()), display, cmd.equals("put"));
+        Store store = Store.load(Path.of(o.file()), display, cmd.equals("put") || cmd.equals("incr"));
         switch (cmd) {
             case "put":
                 store.requireIntact();
                 store.append(Record.put(o.key(), value));
                 return 0;
+            case "incr": {
+                store.requireIntact();
+                Record currentRecord = store.live().get(o.key());
+                long current = 0;
+                if (currentRecord != null) {
+                    try {
+                        current = Counter.parse(new String(currentRecord.value(), StandardCharsets.US_ASCII));
+                    } catch (NumberFormatException e) {
+                        throw new KvException("value of \"" + o.key() + "\" is not a whole number");
+                    }
+                }
+                long result;
+                try {
+                    result = Counter.add(current, o.delta());
+                } catch (ArithmeticException e) {
+                    throw new KvException("result for \"" + o.key() + "\" is out of range");
+                }
+                byte[] resultBytes = Long.toString(result).getBytes(StandardCharsets.US_ASCII);
+                store.append(Record.put(o.key(), resultBytes));
+                stdout.print(Report.incremented(result));
+                return 0;
+            }
             case "del":
                 store.requireIntact();
                 if (!store.live().containsKey(o.key())) {

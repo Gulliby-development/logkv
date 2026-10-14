@@ -31,6 +31,7 @@ class CliTest {
     private static final String USAGE = "usage: logkv put FILE KEY VALUE\n"
             + "       logkv get FILE KEY\n"
             + "       logkv del FILE KEY\n"
+            + "       logkv incr FILE KEY [DELTA]\n"
             + "       logkv list FILE [--prefix PREFIX]\n"
             + "       logkv stats|compact|verify|repair|dump FILE\n";
     private static final String DEMO_DUMP = "4 put alpha 3\n23 put beta 3\n41 put alpha 3\n60 del beta\n75 put gamma 4\n";
@@ -180,7 +181,7 @@ class CliTest {
     @Test
     void noArgumentsIsMissingCommand() {
         check(run(), 2, "",
-                "logkv: missing command (put, get, del, list, stats, compact, verify, repair or dump)\n");
+                "logkv: missing command (put, get, del, incr, list, stats, compact, verify, repair or dump)\n");
     }
 
     @Test
