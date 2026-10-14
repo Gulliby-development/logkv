@@ -9,6 +9,7 @@ public final class Report {
         return "usage: logkv put FILE KEY VALUE\n"
                 + "       logkv get FILE KEY\n"
                 + "       logkv del FILE KEY\n"
+                + "       logkv incr FILE KEY [DELTA]\n"
                 + "       logkv list FILE [--prefix PREFIX]\n"
                 + "       logkv stats|compact|verify|repair|dump FILE\n";
     }
@@ -62,6 +63,10 @@ public final class Report {
     public static String warning(String display, long ignored, long offset, String reason) {
         return "logkv: warning: " + display + ": " + ignored + " bytes after offset " + offset
                 + " are corrupt (" + reason + "); run repair\n";
+    }
+
+    public static String incremented(long value) {
+        return Long.toString(value) + "\n";
     }
 
     public static String error(String message) {

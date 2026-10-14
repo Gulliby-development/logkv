@@ -33,6 +33,7 @@ class DocsTest {
         String usage = "usage: logkv put FILE KEY VALUE\n"
                 + "       logkv get FILE KEY\n"
                 + "       logkv del FILE KEY\n"
+                + "       logkv incr FILE KEY [DELTA]\n"
                 + "       logkv list FILE [--prefix PREFIX]\n"
                 + "       logkv stats|compact|verify|repair|dump FILE\n";
         assertTrue(readme.contains(usage));

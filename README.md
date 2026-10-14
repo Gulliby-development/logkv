@@ -28,6 +28,7 @@ java -cp target/classes io.github.gulliby.logkv.Main ARGS
 usage: logkv put FILE KEY VALUE
        logkv get FILE KEY
        logkv del FILE KEY
+       logkv incr FILE KEY [DELTA]
        logkv list FILE [--prefix PREFIX]
        logkv stats|compact|verify|repair|dump FILE
 ```
@@ -63,6 +64,28 @@ garbage: 52 bytes (55%)
 60 del beta
 75 put gamma 4
 ```
+
+## Counters
+
+`incr` keeps a counter in a key. The value is the decimal digits of a signed 64-bit integer; a key that does not exist counts as 0. `DELTA` is the amount to add, a whole number such as `5` or `-20` (default 1), and `incr` prints the new value. A negative `DELTA` is written as it is, without `--`.
+
+```
+logkv incr visits.kv hits
+logkv incr visits.kv hits
+logkv incr visits.kv hits 5
+logkv incr visits.kv balance -20
+```
+
+print
+
+```
+1
+2
+7
+-20
+```
+
+Every `incr` appends one `put` record, also when `DELTA` is 0. A value that is not a whole number (`abc`, `1.5`, an empty value, a number with a plus sign or leading zeros) and a result outside the 64-bit range are errors with exit code 2 and the file stays as it is. Like `put`, `incr` creates a missing file and refuses to work on a damaged one until you run `repair`.
 
 ## File format
 
