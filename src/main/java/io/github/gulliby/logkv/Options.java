@@ -62,11 +62,13 @@ public final class Options {
             throw new KvException("missing command (put, get, del, incr, list, stats, compact, verify, repair or dump)");
         }
         String first = args[0];
-        if (first.equals("--help")) {
+        if (first.equals("--help") || first.equals("-h") || first.equals("help")) {
             if (args.length == 1) {
                 return new Options(true, null, null, null, null, null, 1);
             }
-            throw new KvException("unknown option \"--help\"");
+            if (!first.equals("help")) {
+                throw new KvException("unknown option \"" + first + "\"");
+            }
         }
         if (!COMMANDS.contains(first)) {
             throw new KvException("unknown command \"" + first + "\"");

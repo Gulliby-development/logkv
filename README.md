@@ -65,6 +65,10 @@ garbage: 52 bytes (55%)
 75 put gamma 4
 ```
 
+## Help
+
+`logkv --help`, `logkv -h` and `logkv help` each print the usage text above and exit with 0 when they are the only argument. Anywhere else `-h` is an unknown option (`logkv: unknown option "-h"`, exit 2) and `help` is an unknown command. The usage text itself is unchanged.
+
 ## Counters
 
 `incr` keeps a counter in a key. The value is the decimal digits of a signed 64-bit integer; a key that does not exist counts as 0. `DELTA` is the amount to add, a whole number such as `5` or `-20` (default 1), and `incr` prints the new value. A negative `DELTA` is written as it is, without `--`.
