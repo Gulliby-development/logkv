@@ -10,7 +10,7 @@ public final class Report {
                 + "       logkv get FILE KEY\n"
                 + "       logkv del FILE KEY\n"
                 + "       logkv incr FILE KEY [DELTA]\n"
-                + "       logkv list FILE [--prefix PREFIX]\n"
+                + "       logkv list FILE [--prefix PREFIX] [--count]\n"
                 + "       logkv stats|compact|verify|repair|dump FILE\n";
     }
 
@@ -58,6 +58,10 @@ public final class Report {
 
     public static String listLine(String key) {
         return key + "\n";
+    }
+
+    public static String count(long keys) {
+        return Long.toString(keys) + "\n";
     }
 
     public static String warning(String display, long ignored, long offset, String reason) {

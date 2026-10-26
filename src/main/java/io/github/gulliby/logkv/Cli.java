@@ -91,13 +91,21 @@ public final class Cli {
                 byte[] v = rec.value();
                 stdout.write(v, 0, v.length);
                 return 0;
-            case "list":
+            case "list": {
+                long listed = 0;
                 for (String k : store.live().keySet()) {
                     if (o.prefix() == null || k.startsWith(o.prefix())) {
-                        stdout.print(Report.listLine(k));
+                        listed++;
+                        if (!o.count()) {
+                            stdout.print(Report.listLine(k));
+                        }
                     }
                 }
+                if (o.count()) {
+                    stdout.print(Report.count(listed));
+                }
                 return 0;
+            }
             case "stats":
                 stdout.print(Report.stats(store.live().size(), store.scan().records().size(),
                         store.fileLength(), store.liveBytes()));

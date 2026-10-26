@@ -32,7 +32,7 @@ class CliTest {
             + "       logkv get FILE KEY\n"
             + "       logkv del FILE KEY\n"
             + "       logkv incr FILE KEY [DELTA]\n"
-            + "       logkv list FILE [--prefix PREFIX]\n"
+            + "       logkv list FILE [--prefix PREFIX] [--count]\n"
             + "       logkv stats|compact|verify|repair|dump FILE\n";
     private static final String DEMO_DUMP = "4 put alpha 3\n23 put beta 3\n41 put alpha 3\n60 del beta\n75 put gamma 4\n";
     private static final String TAIL_WARNING_SUFFIX =
