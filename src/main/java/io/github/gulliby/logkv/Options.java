@@ -14,15 +14,18 @@ public final class Options {
     private final String key;
     private final String value;
     private final String prefix;
+    private final boolean count;
     private final long delta;
 
-    private Options(boolean help, String command, String file, String key, String value, String prefix, long delta) {
+    private Options(boolean help, String command, String file, String key, String value, String prefix,
+            boolean count, long delta) {
         this.help = help;
         this.command = command;
         this.file = file;
         this.key = key;
         this.value = value;
         this.prefix = prefix;
+        this.count = count;
         this.delta = delta;
     }
 
@@ -52,6 +55,11 @@ public final class Options {
         return prefix;
     }
 
+    /** Whether {@code list} prints only the number of keys. */
+    public boolean count() {
+        return count;
+    }
+
     /** The parsed counter delta, or 1 when no delta was supplied. */
     public long delta() {
         return delta;
@@ -64,7 +72,7 @@ public final class Options {
         String first = args[0];
         if (first.equals("--help") || first.equals("-h") || first.equals("help")) {
             if (args.length == 1) {
-                return new Options(true, null, null, null, null, null, 1);
+                return new Options(true, null, null, null, null, null, false, 1);
             }
             if (!first.equals("help")) {
                 throw new KvException("unknown option \"" + first + "\"");
@@ -77,6 +85,7 @@ public final class Options {
         boolean isIncr = first.equals("incr");
         List<String> pos = new ArrayList<>();
         String prefix = null;
+        boolean count = false;
         boolean positionalOnly = false;
         for (int i = 1; i < args.length; i++) {
             String a = args[i];
@@ -91,6 +100,8 @@ public final class Options {
                 prefix = args[++i];
             } else if (isList && a.startsWith("--prefix=")) {
                 prefix = a.substring("--prefix=".length());
+            } else if (isList && a.equals("--count")) {
+                count = true;
             } else if (a.startsWith("-") && (isIncr ? !isNegativeDecimalArgument(a) : !a.equals("-"))) {
                 throw new KvException("unknown option \"" + a + "\"");
             } else {
@@ -132,7 +143,7 @@ public final class Options {
                         + "\" (expected a whole number from -9223372036854775808 to 9223372036854775807)");
             }
         }
-        return new Options(false, first, pos.get(0), key, value, prefix, delta);
+        return new Options(false, first, pos.get(0), key, value, prefix, count, delta);
     }
 
     private static boolean isNegativeDecimalArgument(String argument) {

@@ -29,7 +29,7 @@ usage: logkv put FILE KEY VALUE
        logkv get FILE KEY
        logkv del FILE KEY
        logkv incr FILE KEY [DELTA]
-       logkv list FILE [--prefix PREFIX]
+       logkv list FILE [--prefix PREFIX] [--count]
        logkv stats|compact|verify|repair|dump FILE
 ```
 
@@ -64,6 +64,8 @@ garbage: 52 bytes (55%)
 60 del beta
 75 put gamma 4
 ```
+
+`logkv list demo.kv` prints `alpha` and `gamma`. With `--count` it prints only how many keys it would list, as a decimal number and a line feed: `logkv list demo.kv --count` prints `2`, `logkv list demo.kv --prefix a --count` prints `1`, and when no key matches (or the file is empty) it prints `0`. `--count` is an option of `list` only; it may stand before or after `--prefix` and may be repeated.
 
 ## Help
 
