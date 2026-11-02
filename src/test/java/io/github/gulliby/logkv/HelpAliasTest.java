@@ -21,7 +21,7 @@ class HelpAliasTest {
             + "       logkv get FILE KEY\n"
             + "       logkv del FILE KEY\n"
             + "       logkv incr FILE KEY [DELTA]\n"
-            + "       logkv list FILE [--prefix PREFIX] [--count]\n"
+            + "       logkv list FILE [--prefix PREFIX] [--count] [--limit N]\n"
             + "       logkv stats|compact|verify|repair|dump FILE\n";
 
     @TempDir

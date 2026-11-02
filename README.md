@@ -29,7 +29,7 @@ usage: logkv put FILE KEY VALUE
        logkv get FILE KEY
        logkv del FILE KEY
        logkv incr FILE KEY [DELTA]
-       logkv list FILE [--prefix PREFIX] [--count]
+       logkv list FILE [--prefix PREFIX] [--count] [--limit N]
        logkv stats|compact|verify|repair|dump FILE
 ```
 
@@ -66,6 +66,8 @@ garbage: 52 bytes (55%)
 ```
 
 `logkv list demo.kv` prints `alpha` and `gamma`. With `--count` it prints only how many keys it would list, as a decimal number and a line feed: `logkv list demo.kv --count` prints `2`, `logkv list demo.kv --prefix a --count` prints `1`, and when no key matches (or the file is empty) it prints `0`. `--count` is an option of `list` only; it may stand before or after `--prefix` and may be repeated.
+
+`--limit N` stops `list` after N keys. N is a whole number from 1 to 1000000 written as decimal digits, without a sign or leading zeros. The first N matching keys are listed in the usual order, and with `--count` the number printed is at most N. `--limit` is an option of `list` only; it may stand anywhere among the options and may be repeated, the last one wins. `logkv list demo.kv --limit 1` prints `alpha`, `logkv list demo.kv --prefix g --limit 5` prints `gamma` and `logkv list demo.kv --limit 1 --count` prints `1`. A missing value is `logkv: --limit needs a value` and any other N is `logkv: invalid limit "N" (expected a whole number from 1 to 1000000)`, both with exit code 2.
 
 ## Help
 

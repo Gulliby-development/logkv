@@ -94,6 +94,9 @@ public final class Cli {
             case "list": {
                 long listed = 0;
                 for (String k : store.live().keySet()) {
+                    if (o.limit() > 0 && listed >= o.limit()) {
+                        break;
+                    }
                     if (o.prefix() == null || k.startsWith(o.prefix())) {
                         listed++;
                         if (!o.count()) {
