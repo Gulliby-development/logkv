@@ -16,9 +16,10 @@ public final class Options {
     private final String prefix;
     private final boolean count;
     private final long delta;
+    private final long limit;
 
     private Options(boolean help, String command, String file, String key, String value, String prefix,
-            boolean count, long delta) {
+            boolean count, long delta, long limit) {
         this.help = help;
         this.command = command;
         this.file = file;
@@ -27,6 +28,7 @@ public final class Options {
         this.prefix = prefix;
         this.count = count;
         this.delta = delta;
+        this.limit = limit;
     }
 
     public boolean help() {
@@ -65,6 +67,11 @@ public final class Options {
         return delta;
     }
 
+    /** The most keys {@code list} prints or counts, or 0 when no limit was given. */
+    public long limit() {
+        return limit;
+    }
+
     public static Options parse(String[] args) {
         if (args.length == 0) {
             throw new KvException("missing command (put, get, del, incr, list, stats, compact, verify, repair or dump)");
@@ -72,7 +79,7 @@ public final class Options {
         String first = args[0];
         if (first.equals("--help") || first.equals("-h") || first.equals("help")) {
             if (args.length == 1) {
-                return new Options(true, null, null, null, null, null, false, 1);
+                return new Options(true, null, null, null, null, null, false, 1, 0);
             }
             if (!first.equals("help")) {
                 throw new KvException("unknown option \"" + first + "\"");
@@ -86,6 +93,7 @@ public final class Options {
         List<String> pos = new ArrayList<>();
         String prefix = null;
         boolean count = false;
+        String limitText = null;
         boolean positionalOnly = false;
         for (int i = 1; i < args.length; i++) {
             String a = args[i];
@@ -100,6 +108,13 @@ public final class Options {
                 prefix = args[++i];
             } else if (isList && a.startsWith("--prefix=")) {
                 prefix = a.substring("--prefix=".length());
+            } else if (isList && a.equals("--limit")) {
+                if (i + 1 >= args.length) {
+                    throw new KvException("--limit needs a value");
+                }
+                limitText = args[++i];
+            } else if (isList && a.startsWith("--limit=")) {
+                limitText = a.substring("--limit=".length());
             } else if (isList && a.equals("--count")) {
                 count = true;
             } else if (a.startsWith("-") && (isIncr ? !isNegativeDecimalArgument(a) : !a.equals("-"))) {
@@ -133,6 +148,10 @@ public final class Options {
             throw new KvException("invalid prefix \"" + prefix
                     + "\" (expected printable ASCII characters, no spaces)");
         }
+        long limit = 0;
+        if (limitText != null) {
+            limit = parseLimit(limitText);
+        }
         long delta = 1;
         if (isIncr && pos.size() > 2) {
             String rawDelta = pos.get(2);
@@ -143,7 +162,20 @@ public final class Options {
                         + "\" (expected a whole number from -9223372036854775808 to 9223372036854775807)");
             }
         }
-        return new Options(false, first, pos.get(0), key, value, prefix, count, delta);
+        return new Options(false, first, pos.get(0), key, value, prefix, count, delta, limit);
+    }
+
+    private static long parseLimit(String text) {
+        boolean digits = !text.isEmpty() && text.length() <= 7 && (text.length() == 1 || text.charAt(0) != '0');
+        for (int i = 0; digits && i < text.length(); i++) {
+            char c = text.charAt(i);
+            digits = c >= '0' && c <= '9';
+        }
+        long parsed = digits ? Long.parseLong(text) : 0;
+        if (parsed < 1 || parsed > 1000000) {
+            throw new KvException("invalid limit \"" + text + "\" (expected a whole number from 1 to 1000000)");
+        }
+        return parsed;
     }
 
     private static boolean isNegativeDecimalArgument(String argument) {
